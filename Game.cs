@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using Microsoft.Kinect;
 using System.ComponentModel;
+using System.Threading;
 
 namespace BlackWhiteCutGame
 {
@@ -79,21 +80,30 @@ namespace BlackWhiteCutGame
         private string DetectHandGesture(Body body)
         {
             string gesture = string.Empty;
-
-            // 獲取手的狀態
-            HandState leftHandState = body.HandLeftState;
-            HandState rightHandState = body.HandRightState;
+            while (true)
+            {
+                //  第一次獲取手的狀態
+                HandState leftHandState1 = body.HandLeftState;
+                HandState rightHandState1 = body.HandRightState;
+                System.Threading.Thread.Sleep(1000);
+                //  第二次獲取手的狀態
+                HandState leftHandState2 = body.HandLeftState;
+                HandState rightHandState2 = body.HandRightState;
+                if(leftHandState1 != null && rightHandState1 != null && leftHandState2 != null && rightHandState2 != null) {
+                    if (leftHandState1 == leftHandState2 && rightHandState1 == rightHandState2) {
+                        break;
+            }
 
             // 根據手的狀態判斷手勢
-            if (leftHandState == HandState.Closed && rightHandState == HandState.Closed)
+            if (leftHandState1 == HandState.Closed && rightHandState1 == HandState.Closed)
             {
                 gesture = "石頭";
             }
-            else if (leftHandState == HandState.Open && rightHandState == HandState.Open)
+            else if (leftHandState1 == HandState.Open && rightHandState1 == HandState.Open)
             {
                 gesture = "布";
             }
-            else if (leftHandState == HandState.Lasso || rightHandState == HandState.Lasso)
+            else if (leftHandState1 == HandState.Lasso || rightHandState1 == HandState.Lasso)
             {
                 gesture = "剪刀";
             }
