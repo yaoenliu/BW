@@ -22,6 +22,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        int curDirState = -1;
+        int curHandState = -1;
         /// <summary>
         /// Radius of drawn hand circles
         /// </summary>
@@ -333,6 +335,9 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
                         if (body.IsTracked)
                         {
+                            bool handRightFound = false;
+                            bool ShoulderRightFound = false;
+
                             this.DrawClippedEdges(body, dc);
 
                             IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
@@ -342,6 +347,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
                             foreach (JointType jointType in joints.Keys)
                             {
+                                if (jointType == JointType.HandRight)
+                                    handRightFound = true;
+                                if (jointType == JointType.ShoulderRight)
+                                    ShoulderRightFound = true;
                                 // sometimes the depth(Z) of an inferred joint may show as negative
                                 // clamp down to 0.1f to prevent coordinatemapper from returning (-Infinity, -Infinity)
                                 CameraSpacePoint position = joints[jointType].Position;
@@ -349,9 +358,39 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                                 {
                                     position.Z = InferredZPositionClamp;
                                 }
-
                                 DepthSpacePoint depthSpacePoint = this.coordinateMapper.MapCameraPointToDepthSpace(position);
                                 jointPoints[jointType] = new Point(depthSpacePoint.X, depthSpacePoint.Y);
+                            }
+                            if (handRightFound && ShoulderRightFound)
+                            {
+                                double deltaX = jointPoints[JointType.HandRight].X - jointPoints[JointType.ShoulderRight].X;
+                                double deltaY = jointPoints[JointType.HandRight].Y - jointPoints[JointType.ShoulderRight].Y;
+                                if(Math.Abs(deltaX) > Math.Abs(deltaY * 2))
+                                {
+                                    if (deltaX > 0)
+                                    {
+                                        curDirState = 3;
+                                        Debug.WriteLine("Right");
+                                    }
+                                    else
+                                    {
+                                        curDirState = 1;
+                                        Debug.WriteLine("Left");
+                                    }
+                                }
+                                else if (Math.Abs(deltaY) > Math.Abs(deltaX * 2))
+                                {
+                                    if(deltaY > 0)
+                                    {
+                                        curDirState = 2;
+                                        Debug.WriteLine("Down");
+                                    }
+                                    else
+                                    {
+                                        curDirState = 0;
+                                        Debug.WriteLine("Up");
+                                    }
+                                }
                             }
 
                             this.DrawBody(joints, jointPoints, dc, drawPen);
@@ -448,16 +487,19 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 case HandState.Closed:
                     drawingContext.DrawEllipse(this.handClosedBrush, null, handPosition, HandSize, HandSize);
+                    curHandState = 1;
                     Debug.WriteLine("Stone");
                     break;
 
                 case HandState.Open:
                     drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
+                    curHandState = 2;
                     Debug.WriteLine("Paper");
                     break;
 
                 case HandState.Lasso:
                     drawingContext.DrawEllipse(this.handLassoBrush, null, handPosition, HandSize, HandSize);
+                    curHandState = 3;
                     Debug.WriteLine("Scissors");
                     break;
             }
