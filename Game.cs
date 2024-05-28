@@ -7,43 +7,22 @@ using System.Threading;
 
 namespace BlackWhiteCutGame
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        /// <summary>
+        /// INotifyPropertyChangedPropertyChanged event to allow window controls to bind to changeable data
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
         private KinectSensor kinectSensor = null;
         private BodyFrameReader bodyFrameReader = null;
         private Body[] bodies = null;
         private string playerChoice = string.Empty;
 
-        public MainWindow()
-        {
-            // 初始化 Kinect
-            this.kinectSensor = KinectSensor.GetDefault();
-            this.bodyFrameReader = this.kinectSensor.BodyFrameSource.OpenReader();
-            this.kinectSensor.Open();
-
-            this.bodyFrameReader.FrameArrived += this.Reader_FrameArrived;
-
-        }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // 開始遊戲
             StartGame();
-        }
-
-        private void MainWindow_Closing(object sender, CancelEventArgs e)
-        {
-            if (this.bodyFrameReader != null)
-            {
-                this.bodyFrameReader.Dispose();
-                this.bodyFrameReader = null;
-            }
-
-            if (this.kinectSensor != null)
-            {
-                this.kinectSensor.Close();
-                this.kinectSensor = null;
-            }
         }
 
         private void Reader_FrameArrived(object sender, BodyFrameArrivedEventArgs e)
@@ -82,34 +61,28 @@ namespace BlackWhiteCutGame
             string gesture = string.Empty;
             while (true)
             {
-                //  第一次獲取手的狀態
-                HandState leftHandState1 = body.HandLeftState;
-                HandState rightHandState1 = body.HandRightState;
-                System.Threading.Thread.Sleep(1000);
-                //  第二次獲取手的狀態
-                HandState leftHandState2 = body.HandLeftState;
-                HandState rightHandState2 = body.HandRightState;
-                if(leftHandState1 != null && rightHandState1 != null && leftHandState2 != null && rightHandState2 != null) {
-                    if (leftHandState1 == leftHandState2 && rightHandState1 == rightHandState2) {
-                        break;
-            }
+                //  獲取手的狀態
+                HandState leftHandState = body.HandLeftState;
+                HandState rightHandState = body.HandRightState;
 
-            // 根據手的狀態判斷手勢
-            if (leftHandState1 == HandState.Closed && rightHandState1 == HandState.Closed)
-            {
-                gesture = "石頭";
-            }
-            else if (leftHandState1 == HandState.Open && rightHandState1 == HandState.Open)
-            {
-                gesture = "布";
-            }
-            else if (leftHandState1 == HandState.Lasso || rightHandState1 == HandState.Lasso)
-            {
-                gesture = "剪刀";
-            }
+                // 根據手的狀態判斷手勢
+                if (leftHandState == HandState.Closed || rightHandState == HandState.Closed)
+                {
+                    gesture = "石頭";
+                }
+                else if (leftHandState == HandState.Open || rightHandState == HandState.Open)
+                {
+                    gesture = "布";
+                }
+                else if (leftHandState == HandState.Lasso || rightHandState == HandState.Lasso)
+                {
+                    gesture = "剪刀";
+                }
 
+            }
             return gesture;
         }
+
 
         private void StartGame()
         {
