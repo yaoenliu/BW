@@ -16,13 +16,14 @@ namespace BlackWhiteCutGame
         private KinectSensor kinectSensor = null;
         private BodyFrameReader bodyFrameReader = null;
         private Body[] bodies = null;
-        private string playerChoice = string.Empty;
+        private Enum.Gesture playerChoice = Enum.Gesture.None;
 
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // 開始遊戲
             StartGame();
+
         }
 
         private void Reader_FrameArrived(object sender, BodyFrameArrivedEventArgs e)
@@ -56,29 +57,25 @@ namespace BlackWhiteCutGame
             }
         }
 
-        private string DetectHandGesture(Body body)
+        private Enum.Gesture DetectHandGesture(Body body)
         {
-            string gesture = string.Empty;
-            while (true)
+            Enum.Gesture gesture = Enum.Gesture.None;
+            //  獲取手的狀態
+            HandState leftHandState = body.HandLeftState;
+            HandState rightHandState = body.HandRightState;
+
+            // 根據手的狀態判斷手勢
+            if (leftHandState == HandState.Closed || rightHandState == HandState.Closed)
             {
-                //  獲取手的狀態
-                HandState leftHandState = body.HandLeftState;
-                HandState rightHandState = body.HandRightState;
-
-                // 根據手的狀態判斷手勢
-                if (leftHandState == HandState.Closed || rightHandState == HandState.Closed)
-                {
-                    gesture = "石頭";
-                }
-                else if (leftHandState == HandState.Open || rightHandState == HandState.Open)
-                {
-                    gesture = "布";
-                }
-                else if (leftHandState == HandState.Lasso || rightHandState == HandState.Lasso)
-                {
-                    gesture = "剪刀";
-                }
-
+                gesture = Enum.Gesture.rock;
+            }
+            else if (leftHandState == HandState.Open || rightHandState == HandState.Open)
+            {
+                gesture = Enum.Gesture.paper;
+            }
+            else if (leftHandState == HandState.Lasso || rightHandState == HandState.Lasso)
+            {
+                gesture = Enum.Gesture.scissor;
             }
             return gesture;
         }
@@ -92,19 +89,31 @@ namespace BlackWhiteCutGame
             {
                 // 等待玩家手勢
                 Console.WriteLine("請做出手勢 (剪刀, 石頭, 布): ");
-                while (string.IsNullOrEmpty(playerChoice))
+                while (playerChoice == Enum.Gesture.None)
                 {
                     // 等待 Kinect 偵測到手勢
                 }
 
                 // 電腦隨機生成手勢
-                string[] choices = { "剪刀", "石頭", "布" };
+                Enum.Gesture computerChoice = Enum.Gesture.None;
                 Random random = new Random();
-                int computerChoiceIndex = random.Next(choices.Length);
-                string computerChoice = choices[computerChoiceIndex];
+                int computerChoiceIndex = random.Next(1, 4);
+                switch (computerChoiceIndex)
+                {
+                    case 1:
+                        computerChoice = Enum.Gesture.rock;
+                        Console.WriteLine("電腦選擇: 石頭");
+                        break;
+                    case 2:
+                        computerChoice = Enum.Gesture.paper;
+                        Console.WriteLine("電腦選擇: 布");
+                        break;
+                    case 3:
+                        computerChoice = Enum.Gesture.scissor;
+                        Console.WriteLine("電腦選擇: 剪刀");
+                        break;
+                }
 
-                // 顯示電腦選擇
-                Console.WriteLine($"電腦選擇: {computerChoice}");
 
                 // 比較手勢，決定勝負
                 string result = DetermineWinner(playerChoice, computerChoice);
@@ -116,22 +125,22 @@ namespace BlackWhiteCutGame
                 playAgain = playAgainInput == "y";
 
                 // 重置玩家手勢
-                playerChoice = string.Empty;
+                playerChoice = Enum.Gesture.None;
             }
 
             Console.WriteLine("謝謝遊玩！");
         }
 
-        private string DetermineWinner(string playerChoice, string computerChoice)
+        private string DetermineWinner(Enum.Gesture playerChoice, Enum.Gesture computerChoice)
         {
             if (playerChoice == computerChoice)
             {
                 return "平手!";
             }
 
-            if ((playerChoice == "剪刀" && computerChoice == "布") ||
-                (playerChoice == "石頭" && computerChoice == "剪刀") ||
-                (playerChoice == "布" && computerChoice == "石頭"))
+            if ((playerChoice == Enum.Gesture.rock && computerChoice == Enum.Gesture.scissor) ||
+                (playerChoice == Enum.Gesture.paper && computerChoice == Enum.Gesture.rock) ||
+                (playerChoice == Enum.Gesture.scissor && computerChoice == Enum.Gesture.paper))
             {
                 return "你贏了!";
             }
