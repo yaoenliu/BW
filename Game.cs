@@ -4,6 +4,8 @@ using System.Windows;
 using Microsoft.Kinect;
 using System.ComponentModel;
 using System.Threading;
+using System.Windows.Media;
+using static Enum;
 
 namespace BlackWhiteCutGame
 {
@@ -16,8 +18,8 @@ namespace BlackWhiteCutGame
         private KinectSensor kinectSensor = null;
         private BodyFrameReader bodyFrameReader = null;
         private Body[] bodies = null;
-        private Enum.Gesture playerChoice = Enum.Gesture.None;
-
+        private Enum.Gesture playerGestureChoice = Enum.Gesture.none;
+        private int winScore = 1, playerScore = 0, computerScore = 0;
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -51,7 +53,7 @@ namespace BlackWhiteCutGame
                     if (body.IsTracked)
                     {
                         // 偵測手勢
-                        playerChoice = DetectHandGesture(body);
+                        playerGestureChoice = DetectHandGesture(body);
                     }
                 }
             }
@@ -59,7 +61,7 @@ namespace BlackWhiteCutGame
 
         private Enum.Gesture DetectHandGesture(Body body)
         {
-            Enum.Gesture gesture = Enum.Gesture.None;
+            Enum.Gesture gesture = Enum.Gesture.none;
             //  獲取手的狀態
             HandState leftHandState = body.HandLeftState;
             HandState rightHandState = body.HandRightState;
@@ -84,68 +86,141 @@ namespace BlackWhiteCutGame
         private void StartGame()
         {
             bool playAgain = true;
-
             while (playAgain)
             {
-                // 等待玩家手勢
-                Console.WriteLine("請做出手勢 (剪刀, 石頭, 布): ");
-                while (playerChoice == Enum.Gesture.None)
+                while (Math.Max(playerScore, computerScore) < winScore)
                 {
-                    // 等待 Kinect 偵測到手勢
+                    // 等待玩家手勢
+                    Console.WriteLine("請做出手勢 (剪刀, 石頭, 布): ");
+                    while (playerGestureChoice == Enum.Gesture.none)
+                    {
+                        // 等待 Kinect 偵測到手勢
+                    }
+
+                    // 電腦隨機生成手勢
+                    Enum.Gesture computerGestureChoice = Enum.Gesture.none;
+                    Random random1 = new Random();
+                    int computerGestureChoiceIndex = random1.Next(1, 4);
+                    switch (computerGestureChoiceIndex)
+                    {
+                        case 1:
+                            computerGestureChoice = Enum.Gesture.rock;
+                            Console.WriteLine("電腦選擇: 石頭");
+                            break;
+                        case 2:
+                            computerGestureChoice = Enum.Gesture.paper;
+                            Console.WriteLine("電腦選擇: 布");
+                            break;
+                        case 3:
+                            computerGestureChoice = Enum.Gesture.scissor;
+                            Console.WriteLine("電腦選擇: 剪刀");
+                            break;
+                    }
+
+                    // 比較手勢，決定猜拳勝負
+                    Enum.Player attacker = DetermineFirstWinner(playerGestureChoice, computerGestureChoice);
+
+                    //平手重猜
+                    if (attacker == Player.none)
+                        continue;
+
+                    while (playerDirectionChoice == Enum.Direction.none)
+                    {
+                        // 等待 Kinect 偵測到動作
+                    }
+
+                    Enum.Direction computerDirectionChoice = Enum.Direction.none;
+                    Random random2 = new Random();
+                    int computerDirectionChoiceIndex = random2.Next(1, 5);
+                    switch (computerDirectionChoiceIndex)
+                    {
+                        case 1:
+                            computerDirectionChoice = Enum.Direction.up;
+                            Console.WriteLine("電腦選擇: 上");
+                            break;
+                        case 2:
+                            computerDirectionChoice = Enum.Direction.down;
+                            Console.WriteLine("電腦選擇: 下");
+                            break;
+                        case 3:
+                            computerDirectionChoice = Enum.Direction.left;
+                            Console.WriteLine("電腦選擇: 左");
+                            break;
+                        case 4:
+                            computerDirectionChoice = Enum.Direction.right;
+                            Console.WriteLine("電腦選擇: 右");
+                            break;
+                    }
+
+                    Direction attackerChoice = Direction.none, defenderChoice = Direction.none;
+
+                    if (attacker == Player.player)
+                    {
+                        attackerChoice = playerDirectionChoice;
+                        defenderChoice = computerDirectionChoice;
+                    }
+                    else
+                    {
+                        attackerChoice = computerDirectionChoice;
+                        defenderChoice = playerDirectionChoice;
+                    }
+                    //決定上下左右勝負
+                    Enum.Player Winner = DetermineSecondWinner(attackerChoice, defenderChoice, attacker);
+
+                    Console.Clear();
+                    // 重置玩家手勢
+                    playerGestureChoice = Enum.Gesture.none;
+                    playerDirectionChoice = Enum.Direction.none;
                 }
-
-                // 電腦隨機生成手勢
-                Enum.Gesture computerChoice = Enum.Gesture.None;
-                Random random = new Random();
-                int computerChoiceIndex = random.Next(1, 4);
-                switch (computerChoiceIndex)
-                {
-                    case 1:
-                        computerChoice = Enum.Gesture.rock;
-                        Console.WriteLine("電腦選擇: 石頭");
-                        break;
-                    case 2:
-                        computerChoice = Enum.Gesture.paper;
-                        Console.WriteLine("電腦選擇: 布");
-                        break;
-                    case 3:
-                        computerChoice = Enum.Gesture.scissor;
-                        Console.WriteLine("電腦選擇: 剪刀");
-                        break;
-                }
-
-
-                // 比較手勢，決定勝負
-                string result = DetermineWinner(playerChoice, computerChoice);
-                Console.WriteLine(result);
 
                 // 詢問是否再玩一局
                 Console.WriteLine("要再玩一局嗎？(y/n): ");
                 string playAgainInput = Console.ReadLine().Trim().ToLower();
                 playAgain = playAgainInput == "y";
-
-                // 重置玩家手勢
-                playerChoice = Enum.Gesture.None;
             }
-
             Console.WriteLine("謝謝遊玩！");
         }
 
-        private string DetermineWinner(Enum.Gesture playerChoice, Enum.Gesture computerChoice)
+        private Enum.Player DetermineFirstWinner(Enum.Gesture playerChoice, Enum.Gesture computerChoice)
         {
             if (playerChoice == computerChoice)
             {
-                return "平手!";
+                Console.WriteLine("猜拳平手");
+                return Player.none;
             }
 
             if ((playerChoice == Enum.Gesture.rock && computerChoice == Enum.Gesture.scissor) ||
                 (playerChoice == Enum.Gesture.paper && computerChoice == Enum.Gesture.rock) ||
                 (playerChoice == Enum.Gesture.scissor && computerChoice == Enum.Gesture.paper))
             {
-                return "你贏了!";
+                Console.WriteLine("玩家猜贏");
+                return Enum.Player.player;
             }
-
-            return "你輸了!";
+            Console.WriteLine("電腦猜贏");
+            return Enum.Player.computer;
+        }
+        //判斷攻擊贏家
+        private Enum.Player DetermineSecondWinner(Enum.Direction attackerChoice, Enum.Direction defenderChoice, Enum.Player attacker)
+        {
+            if (attackerChoice == defenderChoice)
+            {
+                if (attacker == Player.player)
+                {
+                    Console.WriteLine("玩家獲勝");
+                    playerScore += 1;
+                }
+                else if (attacker == Player.computer)
+                {
+                    Console.WriteLine("電腦獲勝");
+                    computerScore += 1;
+                }
+                return attacker;
+            }
+            else
+            {
+                Console.WriteLine("平手");
+                return Player.none;
+            }
         }
     }
 }
