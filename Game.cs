@@ -19,19 +19,24 @@ namespace BlackWhiteCutGame
         private BodyFrameReader bodyFrameReader = null;
         private Body[] bodies = null;
         private Enum.Gesture playerGestureChoice = Enum.Gesture.none;
-        private int winScore = 1, playerScore = 0, computerScore = 0;
+        static int winScore = 1, playerScore = 0, computerScore = 0;
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            //起始選單
+            StartMenu();
+
             // 開始遊戲
             StartGame();
+
+            //結束選單
+            EndMenu();
 
         }
 
         private void Reader_FrameArrived(object sender, BodyFrameArrivedEventArgs e)
         {
             bool dataReceived = false;
-
             using (BodyFrame bodyFrame = e.FrameReference.AcquireFrame())
             {
                 if (bodyFrame != null)
@@ -81,7 +86,20 @@ namespace BlackWhiteCutGame
             }
             return gesture;
         }
-
+        static void StartMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("1.開始遊戲");
+            Console.WriteLine("2.結束遊戲");
+            ConsoleKeyInfo keyInfo = Console.ReadKey(intercept: true);
+            char choice = keyInfo.KeyChar;
+            if (choice != '1')
+            {
+                Environment.Exit(0);
+            }
+            Console.WriteLine("輸入獲勝所需局數:");
+            winScore = Console.Read();
+        }
 
         private void StartGame()
         {
@@ -90,6 +108,8 @@ namespace BlackWhiteCutGame
             {
                 while (Math.Max(playerScore, computerScore) < winScore)
                 {
+                    Console.Clear();
+
                     // 等待玩家手勢
                     Console.WriteLine($"玩家分數: {playerScore}  電腦分數:{computerScore}");
                     Console.WriteLine("請做出手勢 (剪刀, 石頭, 布): ");
@@ -170,7 +190,6 @@ namespace BlackWhiteCutGame
                     //決定動作勝負
                     Enum.Player Winner = DetermineSecondWinner(attackerChoice, defenderChoice, attacker);
 
-                    Console.Clear();
                     // 重置玩家手勢及動作
                     playerGestureChoice = Enum.Gesture.none;
                     playerDirectionChoice = Enum.Direction.none;
@@ -181,9 +200,13 @@ namespace BlackWhiteCutGame
                 string playAgainInput = Console.ReadLine().Trim().ToLower();
                 playAgain = playAgainInput == "y";
             }
-            Console.WriteLine("謝謝遊玩！");
         }
 
+        static void EndMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("謝謝遊玩！");
+        }
         private Enum.Player DetermineFirstWinner(Enum.Gesture playerChoice, Enum.Gesture computerChoice)
         {
             if (playerChoice == computerChoice)
