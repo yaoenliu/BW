@@ -7,7 +7,7 @@ using System.Threading;
 using System.Windows.Media;
 using static Enum;
 
-namespace BlackWhiteCutGame
+namespace Game
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
@@ -23,13 +23,13 @@ namespace BlackWhiteCutGame
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //起始選單
+            // 起始選單
             StartMenu();
 
             // 開始遊戲
             StartGame();
 
-            //結束選單
+            // 結束選單
             EndMenu();
 
         }
@@ -206,6 +206,7 @@ namespace BlackWhiteCutGame
         {
             Console.Clear();
             Console.WriteLine("謝謝遊玩！");
+            Console.ReadKey();
         }
         private Enum.Player DetermineFirstWinner(Enum.Gesture playerChoice, Enum.Gesture computerChoice)
         {
