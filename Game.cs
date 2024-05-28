@@ -91,6 +91,7 @@ namespace BlackWhiteCutGame
                 while (Math.Max(playerScore, computerScore) < winScore)
                 {
                     // 等待玩家手勢
+                    Console.WriteLine($"玩家分數: {playerScore}  電腦分數:{computerScore}");
                     Console.WriteLine("請做出手勢 (剪刀, 石頭, 布): ");
                     while (playerGestureChoice == Enum.Gesture.none)
                     {
@@ -129,6 +130,7 @@ namespace BlackWhiteCutGame
                         // 等待 Kinect 偵測到動作
                     }
 
+                    // 電腦隨機生成動作
                     Enum.Direction computerDirectionChoice = Enum.Direction.none;
                     Random random2 = new Random();
                     int computerDirectionChoiceIndex = random2.Next(1, 5);
@@ -164,11 +166,12 @@ namespace BlackWhiteCutGame
                         attackerChoice = computerDirectionChoice;
                         defenderChoice = playerDirectionChoice;
                     }
-                    //決定上下左右勝負
+
+                    //決定動作勝負
                     Enum.Player Winner = DetermineSecondWinner(attackerChoice, defenderChoice, attacker);
 
                     Console.Clear();
-                    // 重置玩家手勢
+                    // 重置玩家手勢及動作
                     playerGestureChoice = Enum.Gesture.none;
                     playerDirectionChoice = Enum.Direction.none;
                 }
