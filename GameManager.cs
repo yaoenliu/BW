@@ -16,30 +16,12 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         int curHand = -1;
         bool sensorState = false;
 
-
         SensorWindow sensorWindow = new SensorWindow();
 
         public GameManager()
         {
             sensorWindow.Hide();
-            getCurDir();
-            getCurHand();
-            getSensorState();
-        }
-       
-        private void getSensorState()
-        {
-            this.sensorState = sensorWindow.GetSensorWorking();
         }
 
-        private void getCurDir()
-        {
-            this.curDir = sensorWindow.GetCurDirState();
-        }
-
-        private void getCurHand()
-        {
-            this.curHand = sensorWindow.GetCurHandState();
-        }
     }
 }
