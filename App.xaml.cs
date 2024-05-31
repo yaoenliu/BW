@@ -14,5 +14,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     /// </summary>
     public partial class App : Application
     {
+        GameManager gameManager = new GameManager();
+
+        public App()
+        {
+            
+        }
     }
 }

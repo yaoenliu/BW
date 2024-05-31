@@ -17,13 +17,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
 
-    /// <summary>
-    /// Interaction logic for MainWindow
-    /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class SensorWindow : Window, INotifyPropertyChanged
     {
         int curDirState = -1;
         int curHandState = -1;
+
         /// <summary>
         /// Radius of drawn hand circles
         /// </summary>
@@ -132,7 +130,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
-        public MainWindow()
+        public SensorWindow()
         {
             // one sensor is currently supported
             this.kinectSensor = KinectSensor.GetDefault();
@@ -169,7 +167,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
-
+           
             // Left Arm
             this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
@@ -219,6 +217,28 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // initialize the components (controls) of the window
             this.InitializeComponent();
         }
+
+        public int GetCurDirState()
+        {
+            return curDirState;
+        }
+
+        public int GetCurHandState()
+        {
+            return curHandState;
+        }
+
+        public bool GetSensorWorking()
+        {
+            return this.kinectSensor.IsAvailable ? true : false;
+        }
+
+        public void HideWindow()
+        {
+            this.Hide();
+        }
+
+        
 
         /// <summary>
         /// INotifyPropertyChangedPropertyChanged event to allow window controls to bind to changeable data
