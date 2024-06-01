@@ -19,8 +19,57 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
     public partial class SensorWindow : Window, INotifyPropertyChanged
     {
-        int curDirState = -1;
-        int curHandState = -1;
+        private int curDirState = -1;
+        private int curHandState = -1;
+        
+        public event PropertyChangedEventHandler DirChanged;
+        public event PropertyChangedEventHandler HandChanged;
+
+        public int CurDirState
+        {
+            get { return curDirState; }
+            set
+            {
+                if (curDirState != value)
+                {
+                    curDirState = value;
+                    this.RaisePropertyChange("Dir");
+                }
+            }
+        }   
+
+        public int CurHandState
+        {
+            get { return curHandState; }
+            set
+            {
+                if (curHandState != value)
+                {
+                    curHandState = value;
+                    this.RaisePropertyChange("Hand");
+                }
+            }
+        }
+
+        private void RaisePropertyChange(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case "Dir":
+                    if (DirChanged != null)
+                    {
+                        DirChanged(this, null);
+                    }
+                    break;
+                case "Hand":
+                    if (HandChanged != null)
+                    {
+                        HandChanged(this, null);
+                    }
+                    break;
+
+            }   
+        }
 
         /// <summary>
         /// Radius of drawn hand circles
@@ -389,26 +438,26 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                                 {
                                     if (deltaX > 0)
                                     {
-                                        curDirState = 3;
-                                        Debug.WriteLine("Right");
+                                        CurDirState = 3;
+                                        //Debug.WriteLine("Right");
                                     }
                                     else
                                     {
-                                        curDirState = 1;
-                                        Debug.WriteLine("Left");
+                                        CurDirState = 1;
+                                        //Debug.WriteLine("Left");
                                     }
                                 }
                                 else if (Math.Abs(deltaY) > Math.Abs(deltaX * 2))
                                 {
                                     if(deltaY > 0)
                                     {
-                                        curDirState = 2;
-                                        Debug.WriteLine("Down");
+                                        CurDirState = 2;
+                                        //Debug.WriteLine("Down");
                                     }
                                     else
                                     {
-                                        curDirState = 0;
-                                        Debug.WriteLine("Up");
+                                        CurDirState = 0;
+                                        //Debug.WriteLine("Up");
                                     }
                                 }
                             }
@@ -507,20 +556,20 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 case HandState.Closed:
                     drawingContext.DrawEllipse(this.handClosedBrush, null, handPosition, HandSize, HandSize);
-                    curHandState = 1;
-                    Debug.WriteLine("Stone");
+                    CurHandState = 1;
+                    //Debug.WriteLine("Stone");
                     break;
 
                 case HandState.Open:
                     drawingContext.DrawEllipse(this.handOpenBrush, null, handPosition, HandSize, HandSize);
-                    curHandState = 2;
-                    Debug.WriteLine("Paper");
+                    CurHandState = 2;
+                    //Debug.WriteLine("Paper");
                     break;
 
                 case HandState.Lasso:
                     drawingContext.DrawEllipse(this.handLassoBrush, null, handPosition, HandSize, HandSize);
-                    curHandState = 3;
-                    Debug.WriteLine("Scissors");
+                    CurHandState = 3;
+                    //Debug.WriteLine("Scissors");
                     break;
             }
         }
