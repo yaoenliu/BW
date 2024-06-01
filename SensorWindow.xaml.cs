@@ -24,6 +24,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         
         public event PropertyChangedEventHandler DirChanged;
         public event PropertyChangedEventHandler HandChanged;
+        public event PropertyChangedEventHandler button_Click;
+
 
         public int CurDirState
         {
@@ -626,6 +628,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // on failure, set the status text
             this.StatusText = this.kinectSensor.IsAvailable ? Properties.Resources.RunningStatusText
                                                             : Properties.Resources.SensorNotAvailableStatusText;
+        }
+
+        private void clk(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            button_Click(this, null);
         }
     }
 }

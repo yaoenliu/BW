@@ -19,7 +19,7 @@
 
         <Image Name="countDown" Grid.Row="0" Source="/Images/3.png" HorizontalAlignment="Left" Height="50" Width="50" Margin="0 10 0 5" Stretch="Fill" />
         <TextBlock Grid.Row="0" Margin="0 0 -1 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Body Basics</TextBlock>
-        <Image Grid.Row="0" Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="0 0 0 5" />
+        <Image Grid.Row="0" Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="0 0 0 5" MouseDown="clk" />
         <Viewbox Grid.Row="1" HorizontalAlignment="Center">
             <Image Name="gameShow" />
         </Viewbox>

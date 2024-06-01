@@ -10,6 +10,8 @@ using System.Windows.Input;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Runtime.InteropServices;
+using System.Windows.Media.Converters;
+using System.Windows.Controls;
 
 
 namespace Microsoft.Samples.Kinect.BodyBasics
@@ -19,6 +21,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         int curDir = -1;
         int curHand = -1;
         bool sensorState = false;
+        bool downState = false;
 
         SensorWindow sensorWindow = new SensorWindow();
 
@@ -27,7 +30,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             sensorWindow.Show();
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
-            countdown();
+            sensorWindow.button_Click += countdown;
             //setImage("stone");
         }
 
@@ -47,7 +50,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             sensorWindow.Dispatcher.Invoke(() =>
             {
-                if(seconds == 0)
+                if (seconds == 0)
                 {
                     sensorWindow.countDown.Visibility = Visibility.Hidden;
                     return;
@@ -75,8 +78,18 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             });
         }
 
-        async void countdown()
+        async void countdown (object sender, EventArgs e)
         {
+            if (downState)
+            {
+                return;
+            }
+            downState = true;
+            //play sound
+            var player = new System.Media.SoundPlayer();
+            player.SoundLocation = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Audio/arcade-countdown-7007.wav");
+            player.Load();
+            player.Play();
             sensorWindow.Dispatcher.Invoke(() =>
             {
                 sensorWindow.countDown.Visibility = Visibility.Visible;
@@ -88,6 +101,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             Countdown(1);
             await Task.Delay(1000);
             Countdown(0);
+            downState = false;
         }
     }
 }
