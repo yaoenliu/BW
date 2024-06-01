@@ -12,8 +12,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         Player Enemy;
         public Game() {
             status = "OK";
-            Player myPlayer = new Player();
-            Player Enemy = new Player();
+            myPlayer = new Player();
+            Enemy = new Player();
         }
         public void setPlayerHand(int handState)
         {
