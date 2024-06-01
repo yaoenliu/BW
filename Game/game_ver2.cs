@@ -1,4 +1,5 @@
 using System;
+using System.IO.Ports;
 using System.Threading;
 using System.Windows;
 
@@ -6,165 +7,100 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 {
     class Game
     {
-        static void GameStart(string[] args)
+        string status = "";
+        Player myPlayer;
+        Player Enemy;
+        public Game() {
+            status = "OK";
+            Player myPlayer = new Player();
+            Player Enemy = new Player();
+        }
+        public void setPlayerHand(int handState)
         {
-            string status = "";
-            Console.WriteLine("Please enter 'Start' to begin the game");
-            status = Console.ReadLine();
-            while (status == "Start")
+            myPlayer.SetFrame(handState);
+        }
+        public int getPlayerHand()
+        {
+            return myPlayer.GetHand();
+        }
+        public void setPlayerDir(int dirState)
+        {
+            myPlayer.SetDirection(dirState);
+        }
+        public int getPlayerDir()
+        {
+            return myPlayer.GetDirection();
+        }
+        public void setEnemyHand(int handState)
+        {
+            Enemy.SetFrame(handState);
+        }
+        public int getEnemyHand()
+        {
+            return Enemy.GetHand();
+        }
+        public void setEnemyDir(int dirState)
+        {
+            Enemy.SetDirection(dirState);
+        }
+        public int getEnemyDir()
+        {
+            return Enemy.GetDirection();
+        }
+        public int randomHandState()
+        {
+            int hand = new Random().Next(1, 3);
+            return hand;
+        }
+        public int randomDirState()
+        {
+            int Dir = new Random().Next(0, 3);
+            return Dir;
+        }
+        public int RockPaperScissor(Player myPlayer,Player Enemy)
+        {
+            int winner = -1;    //0 is draw,1 is i win,2 is enemy win
+            int myHand = myPlayer.GetHand();
+            int enemyHand = Enemy.GetHand();
+            switch (myHand)
             {
-                bool isFrameWin = false;
-                Player myPlayer = new Player();
-                Player Enemy = new Player();
-                string hand1 = "";
-                string hand2 = "";
-                while (true)
-                {
-                    Console.WriteLine("Please enter a hand gesture: Rock/Scissors/Paper");
-                    hand1 = Console.ReadLine(); // First input
-                                                //Thread.Sleep(3000);
-                    Console.WriteLine("Please enter the same hand gesture: Rock/Scissors/Paper");
-                    hand2 = Console.ReadLine(); // Second input
-                    if (hand1 == hand2) // Check if the two inputs are the same
-                    {
-                        break;
-                    }
-                }
-                myPlayer.SetFrame(hand1);
-                // Enemy randomly chooses a hand gesture
-                int enemyFrame = new Random().Next(0, 3);
-                if (enemyFrame == 0)
-                {
-                    Console.WriteLine("Enemy: Rock");
-                    Enemy.SetFrame("Rock");
-                }
-                else if (enemyFrame == 1)
-                {
-                    Console.WriteLine("Enemy: Scissors");
-                    Enemy.SetFrame("Scissors");
-                }
-                else
-                {
-                    Console.WriteLine("Enemy: Paper");
-                    Enemy.SetFrame("Paper");
-                }
-                // Determine the winner
-                if (myPlayer.GetHand() == "Rock")
-                {
-                    if (Enemy.GetHand() == "Rock")
-                    {
-                        Console.WriteLine("Draw");
-                        continue;
-                    }
-                    else if (Enemy.GetHand() == "Scissors")
-                    {
-                        Console.WriteLine("Win");
-                        isFrameWin = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Lose");
-                        isFrameWin = false;
-                    }
-                }
-                else if (myPlayer.GetHand() == "Scissors")
-                {
-                    if (Enemy.GetHand() == "Rock")
-                    {
-                        Console.WriteLine("Lose");
-                        isFrameWin = false;
-                    }
-                    else if (Enemy.GetHand() == "Scissors")
-                    {
-                        Console.WriteLine("Draw");
-                        continue;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Win");
-                        isFrameWin = true;
-                    }
-                }
-                else
-                {
-                    if (Enemy.GetHand() == "Rock")
-                    {
-                        Console.WriteLine("Win");
-                        isFrameWin = true;
-                    }
-                    else if (Enemy.GetHand() == "Scissors")
-                    {
-                        Console.WriteLine("Lose");
-                        isFrameWin = false;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Draw");
-                        continue;
-                    }
-                }
-                // Read the hand direction
-                hand1 = "";
-                hand2 = "";
-                while (true)
-                {
-                    Console.WriteLine("Please enter a direction: Up/Down/Left/Right");
-                    hand1 = Console.ReadLine(); // First input
-                                                //Thread.Sleep(3000);
-                    Console.WriteLine("Please enter the same direction: Up/Down/Left/Right");
-                    hand2 = Console.ReadLine(); // Second input
-                    if (hand1 == hand2) // Check if the two inputs are the same
-                    {
-                        break;
-                    }
-                }
-                myPlayer.SetDirection(hand1);
-
-                // Enemy's hand direction
-                int enemyDirection = new Random().Next(0, 4);
-                if (enemyDirection == 0)
-                {
-                    Console.WriteLine("Enemy: Up");
-                    Enemy.SetDirection("Up");
-                }
-                else if (enemyDirection == 1)
-                {
-                    Console.WriteLine("Enemy: Down");
-                    Enemy.SetDirection("Down");
-                }
-                else if (enemyDirection == 2)
-                {
-                    Console.WriteLine("Enemy: Left");
-                    Enemy.SetDirection("Left");
-                }
-                else
-                {
-                    Console.WriteLine("Enemy: Right");
-                    Enemy.SetDirection("Right");
-                }
-                // Check if the directions match
-                if (myPlayer.GetDirection() != Enemy.GetDirection())
-                {
-                    Thread.Sleep(3000);
-                    Console.Clear();
-                    Console.WriteLine("Next Round Again");
-                    continue;
-                }
-
-                if (isFrameWin)
-                {
-                    Console.WriteLine("You are Winner");
-                }
-                else
-                {
-                    Console.WriteLine("Yor are Loser");
-                }
-                // Ask if the user wants to play again
-                Thread.Sleep(2000);
-                Console.Clear();
-                Console.WriteLine("Please enter 'Start' to begin the game");
-                status = Console.ReadLine();
+                case 1:     //myHand is Rock
+                    if (enemyHand == 1)
+                        winner = 0;
+                    else if (enemyHand == 2)
+                        winner = 2;
+                    else if (enemyHand == 3)
+                        winner = 1;
+                    break;
+                case 2: //myHand is paper
+                    if (enemyHand == 1)
+                        winner = 1;
+                    else if (enemyHand == 2)
+                        winner = 0;
+                    else if(enemyHand == 3)
+                        winner = 2;
+                    break;
+                case 3: //myHand is scissor
+                    if (enemyHand == 1)
+                        winner = 2;
+                    else if (enemyHand == 2)
+                        winner = 1;
+                    else if (enemyHand == 3)
+                        winner = 0;
+                    break;
             }
+            return winner;
+        }
+        public int blackWhite(Player myPlayer,Player Enemy)
+        {
+            int isSame = -1;    //if 1 then direction is same else direction is different
+            int myDir = myPlayer.GetDirection();
+            int enemyDir = Enemy.GetDirection();
+            if (myDir == enemyDir)
+                isSame = 1;
+            else
+                isSame = 0;
+            return isSame; 
         }
     }
 

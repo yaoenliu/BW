@@ -10,31 +10,31 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     {
         public Player()
         {
-            Frame = "";
-            Direction = "";
+            int Frame = -1;
+            int Direction = -1;
         }
 
-        public void SetFrame(string hand)
+        public void SetFrame(int handState)
         {
-            Frame = hand;
+            Frame = handState;
         }
 
-        public void SetDirection(string hand)
+        public void SetDirection(int handDir)
         {
-            Direction = hand;
+            Direction = handDir;
         }
 
-        public string GetHand()
+        public int GetHand()
         {
             return Frame;
         }
 
-        public string GetDirection()
+        public int GetDirection()
         {
             return Direction;
         }
 
-        private string Frame; // Player's hand gesture
-        private string Direction; // Player's direction
+        private int Frame; // Player's hand gesture
+        private int Direction; // Player's direction
     }
 }
