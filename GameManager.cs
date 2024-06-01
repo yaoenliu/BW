@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Windows.Media.Imaging;
+using System.Runtime.InteropServices;
 
 
 namespace Microsoft.Samples.Kinect.BodyBasics
@@ -23,12 +25,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         public GameManager()
         {
             sensorWindow.Show();
-            sensorWindow.Hide();
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
+            countdown();
+            //setImage("stone");
         }
 
-        void onHandChanged(object sender,  EventArgs e)
+        void onHandChanged(object sender, EventArgs e)
         {
             curHand = sensorWindow.GetCurHandState();
             Debug.WriteLine("Dir : " + curDir + " Hand: " + curHand);
@@ -40,5 +43,51 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             Debug.WriteLine("Dir : " + curDir + " Hand: " + curHand);
         }
 
+        void Countdown(int seconds)
+        {
+            sensorWindow.Dispatcher.Invoke(() =>
+            {
+                if(seconds == 0)
+                {
+                    sensorWindow.countDown.Visibility = Visibility.Hidden;
+                    return;
+                }
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                string path = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Images/" + seconds + ".png");
+                bitmapImage.UriSource = new Uri(path);
+                bitmapImage.EndInit();
+                sensorWindow.countDown.Source = bitmapImage;
+            });
+
+        }
+
+        void setImage(string content)
+        {
+            sensorWindow.Dispatcher.Invoke(() =>
+            {
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                string path = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Images/" + content + ".png");
+                bitmapImage.UriSource = new Uri(path);
+                bitmapImage.EndInit();
+                sensorWindow.gameShow.Source = bitmapImage;
+            });
+        }
+
+        async void countdown()
+        {
+            sensorWindow.Dispatcher.Invoke(() =>
+            {
+                sensorWindow.countDown.Visibility = Visibility.Visible;
+            });
+            Countdown(3);
+            await Task.Delay(1000);
+            Countdown(2);
+            await Task.Delay(1000);
+            Countdown(1);
+            await Task.Delay(1000);
+            Countdown(0);
+        }
     }
 }

@@ -81,7 +81,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GameManager.cs" />
-    <Compile Include="Game\game_ver2.cs" />
+    <Compile Include="Game\Game.cs" />
     <Compile Include="Game\Player.cs" />
     <Compile Include="SensorWindow.xaml.cs">
       <DependentUpon>SensorWindow.xaml</DependentUpon>
@@ -120,6 +120,13 @@
     <Resource Include="Images\Kinect.ico" />
     <Resource Include="Images\Logo.png" />
     <Resource Include="Images\Status.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\1.png" />
+    <Resource Include="Images\2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
