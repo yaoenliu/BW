@@ -21,9 +21,12 @@ namespace Microsoft.Samples.Kinect.BodyBasics
     {
         private int curDirState = -1;
         private int curHandState = -1;
+        private bool inCamera = false;
         
         public event PropertyChangedEventHandler DirChanged;
         public event PropertyChangedEventHandler HandChanged;
+        public event EventHandler SensorAvailable;
+        public event EventHandler ValidInCamera;
 
         public int CurDirState
         {
@@ -32,6 +35,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             {
                 if (curDirState != value)
                 {
+                    if (curDirState == -1) ValidInCamera?.Invoke(this, null);
                     curDirState = value;
                     this.RaisePropertyChange("Dir");
                 }
@@ -626,6 +630,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             // on failure, set the status text
             this.StatusText = this.kinectSensor.IsAvailable ? Properties.Resources.RunningStatusText
                                                             : Properties.Resources.SensorNotAvailableStatusText;
+            SensorAvailable?.Invoke(this, new EventArgs());
         }
     }
 }

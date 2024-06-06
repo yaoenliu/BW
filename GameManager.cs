@@ -14,31 +14,54 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 {
     class GameManager
     {
-        int curDir = -1;
-        int curHand = -1;
-        bool sensorState = false;
-
-        SensorWindow sensorWindow = new SensorWindow();
+        SensorWindow sensorWindow = null;
+        Game game = null;
+        public int WAIT_TIME = 3;
 
         public GameManager()
         {
+            
+            sensorWindow = new SensorWindow();
+            sensorWindow.ValidInCamera += GameStart;
             sensorWindow.Show();
-            sensorWindow.Hide();
+            //sensorWindow.Hide();
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
+            this.game = new Game(this);
+            game.Tie += GameStart;
+        }
+
+        void GameStart(object sender, EventArgs e)
+        {
+            if (!sensorWindow.GetSensorWorking())
+            {
+                Debug.WriteLine("Sensor not working");
+                return;
+            }
+            
+            game.GameStart();
         }
 
         void onHandChanged(object sender,  EventArgs e)
         {
-            curHand = sensorWindow.GetCurHandState();
-            Debug.WriteLine("Dir : " + curDir + " Hand: " + curHand);
+            //Debug.WriteLine("Dir : " + sensorWindow.GetCurDirState() + " Hand: " + sensorWindow.GetCurHandState());
         }
 
         void onDirChanged(object sender, EventArgs e)
         {
-            curDir = sensorWindow.GetCurDirState();
-            Debug.WriteLine("Dir : " + curDir + " Hand: " + curHand);
+            //Debug.WriteLine("Dir : " + sensorWindow.GetCurDirState() + " Hand: " + sensorWindow.GetCurHandState());
+        }
+        
+        public int getCurHandState()
+        {
+            int hand = sensorWindow.GetCurHandState();
+            return hand;
         }
 
+        public int getCurDirState()
+        {
+            int dir = sensorWindow.GetCurDirState();
+            return dir;
+        }
     }
 }
