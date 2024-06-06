@@ -46,56 +46,67 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void RPS()
         {
             this.status = "RPS";
+            Debug.WriteLine("RPS");
+
             int enemyHand = randomHandState();
             setEnemyHand(enemyHand);
+            Debug.WriteLine("enemyHand : " + enemy.GetHand());
+
             resetTimerEvent();
             timer.Tick += RPSResult;
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
             timer.Start();
-            Debug.WriteLine("RPS");
         }
 
         private void RPSResult(object sender, EventArgs e)
         {
             timer.Stop();
+
             int myplayerHand = manager.getCurHandState();
-            Debug.WriteLine("myplayerHand : " + myplayerHand);
-            Debug.WriteLine("enemyHand : " + enemy.GetHand());
             if (myplayerHand < 0)
             {
                 RPS();
                 return;
             }
+
             setPlayerHand(myplayerHand);
+            Debug.WriteLine("myplayerHand : " + myplayerHand);
+            
             RPSWinner = RockPaperScissor(myPlayer, enemy);
             Debug.WriteLine("RPSWinner : " + RPSWinner);
+
             RPSDone?.Invoke(this, null);
         }
 
-        private void BW(object s, EventArgs e)
+        private void BW(object s=null, EventArgs e=null)
         {
             this.status = "BW";
+            Debug.WriteLine("BW");
+
             int enemyDir = randomDirState();
             setEnemyDir(enemyDir);
+            Debug.WriteLine("enemyDir : " + enemy.GetDirection());
+
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
             resetTimerEvent();
             timer.Tick  += BWResult;
             timer.Start();
-            Debug.WriteLine("BW");
         }
 
         private void BWResult(object sender, EventArgs e)
         {
             timer.Stop();
+
             int myplayerDir = manager.getCurDirState();
-            Debug.WriteLine("myplayerDir : " + myplayerDir);
-            Debug.WriteLine("enemyDir : " + enemy.GetDirection());
             if (myplayerDir < 0)
             {
-                BW(null, null);
+                BW();
                 return;
             }
+
             setPlayerDir(myplayerDir);
+            Debug.WriteLine("myplayerDir : " + myplayerDir);
+
             int same = blackWhite(myPlayer, enemy);
             if (same == 1)
             {

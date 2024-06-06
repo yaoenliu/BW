@@ -22,36 +22,33 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         public GameManager()
         {
-            
             sensorWindow = new SensorWindow();
+            game = new Game(this);
+            bindings();
+            sensorWindow.Show();
+        }
+
+        void bindings()
+        {
             sensorWindow.ValidInCamera += GameStart;
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
-            sensorWindow.Show();
-            //sensorWindow.Hide();
-            this.game = new Game(this);
             game.Tie += GameStart;
         }
 
         void GameStart(object sender, EventArgs e)
         {
-            if (!sensorWindow.GetSensorWorking())
-            {
-                Debug.WriteLine("Sensor not working");
-                return;
-            }
-            
             game.GameStart();
         }
 
         void onHandChanged(object sender,  EventArgs e)
         {
-            //Debug.WriteLine("Dir : " + sensorWindow.GetCurDirState() + " Hand: " + sensorWindow.GetCurHandState());
+            
         }
 
         void onDirChanged(object sender, EventArgs e)
         {
-            //Debug.WriteLine("Dir : " + sensorWindow.GetCurDirState() + " Hand: " + sensorWindow.GetCurHandState());
+           
         }
         
         public int getCurHandState()
