@@ -65,6 +65,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             timer.Stop();
             sensorWindow.enemyImage(handtoStr(enemy.GetHand()));
+            sensorWindow.playerImage(dirtoStr(myPlayer.GetDirection()));
             int myplayerHand = manager.getCurHandState();
             if (myplayerHand < 0)
             {
@@ -97,7 +98,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             int enemyDir = randomDirState();
             setEnemyDir(enemyDir);
             Debug.WriteLine("enemyDir : " + enemy.GetDirection());
-
+            sensorWindow.setText("enemyDir : " + enemy.GetDirection());
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
             resetTimerEvent();
             timer.Tick += BWResult;
@@ -107,7 +108,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void BWResult(object sender, EventArgs e)
         {
             timer.Stop();
-
+            sensorWindow.enemyImage(dirtoStr(enemy.GetDirection()));
             int myplayerDir = manager.getCurDirState();
             if (myplayerDir < 0)
             {
@@ -124,6 +125,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 GameWinner = RPSWinner;
                 Over?.Invoke(this, null);
                 Debug.WriteLine("GameWinner : " + GameWinner);
+                sensorWindow.setText("GameWinner : " + GameWinner);
             }
             else
             {
