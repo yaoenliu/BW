@@ -22,7 +22,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private int curDirState = -1;
         private int curHandState = -1;
         private bool inCamera = false;
-        
+
         public event PropertyChangedEventHandler DirChanged;
         public event PropertyChangedEventHandler HandChanged;
         public event EventHandler SensorAvailable;
@@ -40,7 +40,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     this.RaisePropertyChange("Dir");
                 }
             }
-        }   
+        }
 
         public int CurHandState
         {
@@ -72,7 +72,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     }
                     break;
 
-            }   
+            }
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.HandRight));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.HandRight, JointType.HandTipRight));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.WristRight, JointType.ThumbRight));
-           
+
             // Left Arm
             this.bones.Add(new Tuple<JointType, JointType>(JointType.ShoulderLeft, JointType.ElbowLeft));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.ElbowLeft, JointType.WristLeft));
@@ -291,7 +291,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.Hide();
         }
 
-        
+
 
         /// <summary>
         /// INotifyPropertyChangedPropertyChanged event to allow window controls to bind to changeable data
@@ -438,7 +438,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                             {
                                 double deltaX = jointPoints[JointType.HandRight].X - jointPoints[JointType.ShoulderRight].X;
                                 double deltaY = jointPoints[JointType.HandRight].Y - jointPoints[JointType.ShoulderRight].Y;
-                                if(Math.Abs(deltaX) > Math.Abs(deltaY * 2))
+                                if (Math.Abs(deltaX) > Math.Abs(deltaY * 2))
                                 {
                                     if (deltaX > 0)
                                     {
@@ -453,7 +453,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                                 }
                                 else if (Math.Abs(deltaY) > Math.Abs(deltaX * 2))
                                 {
-                                    if(deltaY > 0)
+                                    if (deltaY > 0)
                                     {
                                         CurDirState = 2;
                                         //Debug.WriteLine("Down");
@@ -631,6 +631,32 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.StatusText = this.kinectSensor.IsAvailable ? Properties.Resources.RunningStatusText
                                                             : Properties.Resources.SensorNotAvailableStatusText;
             SensorAvailable?.Invoke(this, new EventArgs());
+        }
+
+
+        public void setText(string text)
+        {
+            this.result.Text = text;
+        }
+
+        public void enemyImage(string content)
+        {
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Images/" + content + ".png");
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path);
+            bitmap.EndInit();
+            enemy.Source = bitmap;
+        }
+
+        public void playerImage(string content)
+        {
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Images/" + content + ".png");
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path);
+            bitmap.EndInit();
+            enemy.Source = bitmap;
         }
     }
 }

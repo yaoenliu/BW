@@ -9,12 +9,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 {
     class Game
     {
-        string status = "";
+        public string status = "";
 
         Player myPlayer = null;
         Player enemy = null;
 
         GameManager manager = null;
+        SensorWindow sensorWindow = null;
         DispatcherTimer timer = new DispatcherTimer();
 
         private int RPSWinner = -1;
@@ -25,9 +26,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         public event EventHandler Tie;
         public event EventHandler Over;
 
-        public Game(GameManager manager)
+        public Game(GameManager manager, SensorWindow sensorWindow)
         {
             this.manager = manager;
+            this.sensorWindow = sensorWindow;
+            sensorWindow.enemyImage("running");
             RPSDone += BW;
         }
 
@@ -36,7 +39,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             Start?.Invoke(this, null);
             myPlayer = new Player();
             enemy = new Player();
-              
+
             this.RPSWinner = -1;
             this.GameWinner = -1;
 
@@ -47,11 +50,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         {
             this.status = "RPS";
             Debug.WriteLine("RPS");
-
+            sensorWindow.setText("Rock Paper Scissor");
             int enemyHand = randomHandState();
             setEnemyHand(enemyHand);
             Debug.WriteLine("enemyHand : " + enemy.GetHand());
-
+            sensorWindow.setText("Enemy Hand : " + handtoStr(enemy.GetHand()));
             resetTimerEvent();
             timer.Tick += RPSResult;
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
@@ -61,7 +64,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void RPSResult(object sender, EventArgs e)
         {
             timer.Stop();
-
+            sensorWindow.enemyImage(handtoStr(enemy.GetHand()));
             int myplayerHand = manager.getCurHandState();
             if (myplayerHand < 0)
             {
@@ -71,14 +74,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             setPlayerHand(myplayerHand);
             Debug.WriteLine("myplayerHand : " + myplayerHand);
-            
+
             RPSWinner = RockPaperScissor(myPlayer, enemy);
             Debug.WriteLine("RPSWinner : " + RPSWinner);
+            sensorWindow.setText("RPSWinner : " + RPSWinner);
 
             RPSDone?.Invoke(this, null);
         }
 
-        private void BW(object s=null, EventArgs e=null)
+        private void BW(object s = null, EventArgs e = null)
         {
             this.status = "BW";
             Debug.WriteLine("BW");
@@ -89,7 +93,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
             resetTimerEvent();
-            timer.Tick  += BWResult;
+            timer.Tick += BWResult;
             timer.Start();
         }
 
@@ -186,7 +190,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             return status;
         }
 
-        private int RockPaperScissor(Player myPlayer,Player Enemy)
+        private int RockPaperScissor(Player myPlayer, Player Enemy)
         {
             int winner = -1;    //0 is draw,1 is i win,2 is enemy win
             int myHand = myPlayer.GetHand();
@@ -206,7 +210,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                         winner = 1;
                     else if (enemyHand == 2)
                         winner = 0;
-                    else if(enemyHand == 3)
+                    else if (enemyHand == 3)
                         winner = 2;
                     break;
                 case 3: //myHand is scissor
@@ -220,7 +224,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
             return winner;
         }
-        private int blackWhite(Player myPlayer,Player Enemy)
+        private int blackWhite(Player myPlayer, Player Enemy)
         {
             int isSame = -1;    //if 1 then direction is same else direction is different
             int myDir = myPlayer.GetDirection();
@@ -229,7 +233,46 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 isSame = 1;
             else
                 isSame = 0;
-            return isSame; 
+            return isSame;
+        }
+
+        public string handtoStr(int hand)
+        {
+            string str = "";
+            switch (hand)
+            {
+                case 1:
+                    str = "Rock";
+                    break;
+                case 2:
+                    str = "Paper";
+                    break;
+                case 3:
+                    str = "Scissor";
+                    break;
+            }
+            return str;
+        }
+
+        public string dirtoStr(int dir)
+        {
+            string str = "";
+            switch (dir)
+            {
+                case 0:
+                    str = "Up";
+                    break;
+                case 1:
+                    str = "Left";
+                    break;
+                case 2:
+                    str = "Down";
+                    break;
+                case 3:
+                    str = "Right";
+                    break;
+            }
+            return str;
         }
     }
 

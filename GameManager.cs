@@ -23,7 +23,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         public GameManager()
         {
             sensorWindow = new SensorWindow();
-            game = new Game(this);
+            game = new Game(this, sensorWindow);
             bindings();
             sensorWindow.Show();
         }
@@ -43,12 +43,18 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         void onHandChanged(object sender,  EventArgs e)
         {
-            
+            if (game.status == "RPS")
+            {
+                sensorWindow.playerImage(game.handtoStr(sensorWindow.CurHandState));
+            }
         }
 
         void onDirChanged(object sender, EventArgs e)
         {
-           
+           if (game.status == "BW")
+            {
+                sensorWindow.playerImage(game.dirtoStr(sensorWindow.CurDirState));
+            }
         }
         
         public int getCurHandState()
