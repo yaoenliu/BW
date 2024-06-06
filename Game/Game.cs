@@ -31,7 +31,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             this.manager = manager;
             this.sensorWindow = sensorWindow;
             sensorWindow.enemyImage("running");
-            RPSDone += BW;
         }
 
         public void GameStart()
@@ -46,11 +45,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             RPS();
         }
 
-        private void RPS()
+        private void RPS(object sender=null, EventArgs e=null)
         {
+            timer.Stop();
             this.status = "RPS";
             Debug.WriteLine("RPS");
             sensorWindow.setText("Rock Paper Scissor");
+            sensorWindow.enemyImage("running");
             int enemyHand = randomHandState();
             setEnemyHand(enemyHand);
             Debug.WriteLine("enemyHand : " + enemy.GetHand());
@@ -64,8 +65,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void RPSResult(object sender, EventArgs e)
         {
             timer.Stop();
-            sensorWindow.enemyImage(handtoStr(enemy.GetHand()));
-            sensorWindow.playerImage(dirtoStr(myPlayer.GetDirection()));
+            
             int myplayerHand = manager.getCurHandState();
             if (myplayerHand < 0)
             {
@@ -75,6 +75,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             setPlayerHand(myplayerHand);
             Debug.WriteLine("myplayerHand : " + myplayerHand);
+            sensorWindow.enemyImage(handtoStr(enemy.GetHand()));
+            sensorWindow.playerImage(handtoStr(myplayerHand));
 
             RPSWinner = RockPaperScissor(myPlayer, enemy);
             if(RPSWinner > 0)
@@ -82,16 +84,18 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 Debug.WriteLine("RPSWinner : " + RPSWinner);
                 sensorWindow.setText("RPSWinner : " + RPSWinner);
                 RPSDone?.Invoke(this, null);
+                wait4("BW");
             }
             else
             {
-                RPS();
+                wait4("RPS");
                 return;
             }
         }
 
         private void BW(object s = null, EventArgs e = null)
         {
+            timer.Stop();
             this.status = "BW";
             Debug.WriteLine("BW");
 
@@ -99,6 +103,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             setEnemyDir(enemyDir);
             Debug.WriteLine("enemyDir : " + enemy.GetDirection());
             sensorWindow.setText("enemyDir : " + enemy.GetDirection());
+            sensorWindow.enemyImage("running");
+            
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
             resetTimerEvent();
             timer.Tick += BWResult;
@@ -108,7 +114,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         private void BWResult(object sender, EventArgs e)
         {
             timer.Stop();
-            sensorWindow.enemyImage(dirtoStr(enemy.GetDirection()));
             int myplayerDir = manager.getCurDirState();
             if (myplayerDir < 0)
             {
@@ -118,6 +123,8 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
             setPlayerDir(myplayerDir);
             Debug.WriteLine("myplayerDir : " + myplayerDir);
+            sensorWindow.playerImage(dirtoStr(myPlayer.GetDirection()));
+            sensorWindow.enemyImage(dirtoStr(enemy.GetDirection()));
 
             int same = blackWhite(myPlayer, enemy);
             if (same == 1)
@@ -126,20 +133,40 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 Over?.Invoke(this, null);
                 Debug.WriteLine("GameWinner : " + GameWinner);
                 sensorWindow.setText("GameWinner : " + GameWinner);
+                this.status = "Over";
             }
             else
             {
                 GameWinner = -1;
                 Tie?.Invoke(this, null);
                 Debug.WriteLine("Tie");
+                wait4("RPS");
             }
             return;
+        }
+
+        private void wait4(string toFunc)
+        {
+            status = "Wait";
+            resetTimerEvent();
+            timer.Interval = TimeSpan.FromSeconds(manager.SPAN_TIME);
+            if (toFunc == "BW")
+            {
+                timer.Tick += BW;
+            }
+            else if(toFunc == "RPS")
+            {
+                timer.Tick += RPS;
+            }
+            timer.Start();
         }
 
         private void resetTimerEvent()
         {
             timer.Tick -= RPSResult;
             timer.Tick -= BWResult;
+            timer.Tick -= RPS;
+            timer.Tick -= BW;
         }
 
         public void setPlayerHand(int handState)
@@ -176,12 +203,13 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         }
         public int randomHandState()
         {
-            int hand = new Random().Next(1, 3);
+            
+            int hand = new Random(System.DateTime.Now.Second).Next(1, 4);
             return hand;
         }
         public int randomDirState()
         {
-            int Dir = new Random().Next(0, 3);
+            int Dir = new Random(System.DateTime.Now.Second).Next(4);
             return Dir;
         }
         public int GetRPSWinner()

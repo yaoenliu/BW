@@ -19,6 +19,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
         SensorWindow sensorWindow = null;
         Game game = null;
         public int WAIT_TIME = 3;
+        public int SPAN_TIME = 2;
 
         public GameManager()
         {
@@ -33,7 +34,6 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             sensorWindow.ValidInCamera += GameStart;
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
-            game.Tie += GameStart;
         }
 
         void GameStart(object sender, EventArgs e)
