@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Windows.Media.Imaging;
+using System.Runtime.InteropServices;
 
 
 namespace Microsoft.Samples.Kinect.BodyBasics
@@ -24,7 +26,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             sensorWindow = new SensorWindow();
             sensorWindow.ValidInCamera += GameStart;
             sensorWindow.Show();
-            //sensorWindow.Hide();
+            sensorWindow.Hide();
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
             this.game = new Game(this);
