@@ -656,7 +656,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(path);
             bitmap.EndInit();
-            enemy.Source = bitmap;
+            player.Source = bitmap;
         }
     }
 }

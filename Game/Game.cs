@@ -76,10 +76,17 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             Debug.WriteLine("myplayerHand : " + myplayerHand);
 
             RPSWinner = RockPaperScissor(myPlayer, enemy);
-            Debug.WriteLine("RPSWinner : " + RPSWinner);
-            sensorWindow.setText("RPSWinner : " + RPSWinner);
-
-            RPSDone?.Invoke(this, null);
+            if(RPSWinner > 0)
+            {
+                Debug.WriteLine("RPSWinner : " + RPSWinner);
+                sensorWindow.setText("RPSWinner : " + RPSWinner);
+                RPSDone?.Invoke(this, null);
+            }
+            else
+            {
+                RPS();
+                return;
+            }
         }
 
         private void BW(object s = null, EventArgs e = null)
