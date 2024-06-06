@@ -248,7 +248,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                     str = "Paper";
                     break;
                 case 3:
-                    str = "Scissor";
+                    str = "Scissors";
                     break;
             }
             return str;
