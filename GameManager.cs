@@ -25,10 +25,10 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             
             sensorWindow = new SensorWindow();
             sensorWindow.ValidInCamera += GameStart;
-            sensorWindow.Show();
-            sensorWindow.Hide();
             sensorWindow.HandChanged += onHandChanged;
             sensorWindow.DirChanged += onDirChanged;
+            sensorWindow.Show();
+            //sensorWindow.Hide();
             this.game = new Game(this);
             game.Tie += GameStart;
         }
