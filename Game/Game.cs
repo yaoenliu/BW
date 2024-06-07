@@ -136,6 +136,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             }
             else
             {
+                sensorWindow.setText("再來一次");
                 GameWinner = -1;
                 Tie?.Invoke(this, null);
                 Debug.WriteLine("Tie");
