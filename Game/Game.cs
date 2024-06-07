@@ -50,12 +50,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             timer.Stop();
             this.status = "RPS";
             Debug.WriteLine("RPS");
-            sensorWindow.setText("Rock Paper Scissor");
+            sensorWindow.setText("請出拳");
             sensorWindow.enemyImage("running");
             int enemyHand = randomHandState();
             setEnemyHand(enemyHand);
             Debug.WriteLine("enemyHand : " + enemy.GetHand());
-            sensorWindow.setText("Enemy Hand : " + handtoStr(enemy.GetHand()));
             resetTimerEvent();
             timer.Tick += RPSResult;
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
@@ -82,7 +81,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             if(RPSWinner > 0)
             {
                 Debug.WriteLine("RPSWinner : " + RPSWinner);
-                sensorWindow.setText("RPSWinner : " + RPSWinner);
+                sensorWindow.setText(playertoStr(RPSWinner) + "贏了！");
                 RPSDone?.Invoke(this, null);
                 wait4("BW");
             }
@@ -98,11 +97,11 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             timer.Stop();
             this.status = "BW";
             Debug.WriteLine("BW");
-
+            sensorWindow.setText("出方向");
             int enemyDir = randomDirState();
             setEnemyDir(enemyDir);
             Debug.WriteLine("enemyDir : " + enemy.GetDirection());
-            sensorWindow.setText("enemyDir : " + enemy.GetDirection());
+            
             sensorWindow.enemyImage("running");
             
             timer.Interval = TimeSpan.FromSeconds(manager.WAIT_TIME);
@@ -132,7 +131,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
                 GameWinner = RPSWinner;
                 Over?.Invoke(this, null);
                 Debug.WriteLine("GameWinner : " + GameWinner);
-                sensorWindow.setText("GameWinner : " + GameWinner);
+                sensorWindow.setText(playertoStr(GameWinner) + "贏了！");
                 this.status = "Over";
             }
             else
@@ -271,6 +270,15 @@ namespace Microsoft.Samples.Kinect.BodyBasics
             else
                 isSame = 0;
             return isSame;
+        }
+
+        public string playertoStr(int player)
+        {
+            if (player == 1)
+                return "你";
+            else
+                return "對手";
+            
         }
 
         public string handtoStr(int hand)

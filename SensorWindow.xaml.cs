@@ -641,7 +641,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         public void enemyImage(string content)
         {
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Images/" + content + ".png");
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "./Images/" + content + ".png");
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(path);
@@ -651,7 +651,7 @@ namespace Microsoft.Samples.Kinect.BodyBasics
 
         public void playerImage(string content)
         {
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "../../../Images/" + content + ".png");
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "./Images/" + content + ".png");
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(path);
